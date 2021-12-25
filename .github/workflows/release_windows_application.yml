@@ -1,0 +1,44 @@
+name: Release App
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  miniconda:
+    name: Miniconda ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+        matrix:
+            os: ["windows-latest"]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: build
+          environment-file: environment_windows.yaml
+          python-version: 3.9
+          auto-activate-base: false
+      - name: Collect Conda Info
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda env export
+      - name: Get Application Version
+        id: get_version
+        uses: battila7/get-version-action@v2
+      - name: Build Application
+        shell: bash -l {0}
+        run: |
+          pyinstaller --noupx --onefile tcode-player.py
+      - name: Upload Windows Build Asset
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./dist/tcode-player.exe
+          asset_name: tcode-player_${{ steps.get_version.outputs.version }}.exe
+          tag: ${{ github.ref }}
+          overwrite: true
