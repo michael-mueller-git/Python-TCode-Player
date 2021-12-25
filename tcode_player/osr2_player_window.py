@@ -12,7 +12,7 @@ from tcode_player.osr2_tcode_controler import OSR2TCodeControler
 from tcode_player.stroke_simulator import StrokeSimulator
 
 if platform.system() == 'Windows':
-    print('producation environment')
+    print('windows environment')
     PLAYER = 'Whirligig'
 else:
     print('develop environment')
