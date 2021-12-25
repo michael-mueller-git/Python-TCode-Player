@@ -1,0 +1,36 @@
+name: Prerelease App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  miniconda:
+    name: Miniconda ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+        matrix:
+            os: ["windows-latest"]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: build
+          environment-file: environment_windows.yaml
+          python-version: 3.9
+          auto-activate-base: false
+      - name: Collect Conda Info
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda env export
+      - name: Build Application
+        shell: bash -l {0}
+        run: |
+          pyinstaller --noupx --onefile tcode-player.py
+      - uses: actions/upload-artifact@v2
+        with:
+          name: tcode_player_${{ github.sha }}.exe
+          path: ./dist/tcode-player.exe
+          retention-days: 7
