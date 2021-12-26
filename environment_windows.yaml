@@ -30,4 +30,7 @@ dependencies:
   - wheel=0.37.0=pyhd3eb1b0_1
   - wincertstore=0.2=py39haa95532_2
   - zlib=1.2.11=h8cc25b3_4
+  - pip:
+    - pynput==1.7.5
+    - six==1.16.0
 prefix: C:\Users\win10\miniconda3\envs\tcode-player

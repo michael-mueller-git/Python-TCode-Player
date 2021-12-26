@@ -28,7 +28,7 @@ jobs:
       - name: Build Application
         shell: bash -l {0}
         run: |
-          pyinstaller --noupx --onefile tcode-player.py
+          pyinstaller --hidden-import "pynput.keyboard._win32" --hidden-import "pynput.mouse._win32" --noupx --onefile tcode-player.py
       - uses: actions/upload-artifact@v2
         with:
           name: tcode_player_${{ github.sha }}.exe
