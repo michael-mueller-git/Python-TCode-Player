@@ -30,6 +30,13 @@ class OSR2TCodeControler(QtCore.QThread):
         self.calculate_player_speed = calculate_player_speed
         self.half_stroke_speed = half_stroke_speed
 
+    def __del__(self):
+        try:
+            if self.serial_device is not None:
+                self.serial_device.close()
+        except:
+            pass
+
     #: funscript changed signal with status string
     funscriptChanged = QtCore.pyqtSignal(str)
 

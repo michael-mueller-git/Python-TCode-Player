@@ -53,7 +53,19 @@ class OSR2PlayerWindow(object):
         Args:
             key (pynput.keyboard.Key): the pressed key
         """
-        if not self.keypress_queue.full():
+        key_str = '{0}'.format(key)
+        def was_key(k):
+            return key_str == "'"+k[0]+"'"
+
+        if was_key('q'):
+            self.ui.lowerLimitSpinBox.setValue(min((99, self.ui.lowerLimitSpinBox.value() + 5, self.ui.upperLimitSpinBox.value())))
+        elif was_key('a'):
+            self.ui.lowerLimitSpinBox.setValue(max((0, self.ui.lowerLimitSpinBox.value() - 5)))
+        elif was_key('w'):
+            self.ui.upperLimitSpinBox.setValue(min((99, self.ui.upperLimitSpinBox.value() + 5)))
+        elif was_key('s'):
+            self.ui.upperLimitSpinBox.setValue(max((0, self.ui.upperLimitSpinBox.value() - 5, self.ui.lowerLimitSpinBox.value())))
+        elif not self.keypress_queue.full():
             self.keypress_queue.put(key)
 
     def show(self):
