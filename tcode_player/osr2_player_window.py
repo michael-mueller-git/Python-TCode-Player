@@ -32,6 +32,7 @@ class OSR2PlayerWindow(object):
         self.form = QtWidgets.QWidget()
         self.ui.setupUi(self.form)
         self.form.setWindowTitle("OSR2 Player")
+        self.__setup_comboboxes()
         self.__setup_variables()
         self.__start_background_tasks()
         self.__add_ui_bindings()
@@ -73,6 +74,12 @@ class OSR2PlayerWindow(object):
 
     def __setup_variables(self):
         self.simulator = None
+
+    def __setup_comboboxes(self):
+        self.ui.simulatorModeComboBox.addItems([
+            "linear",
+            "random"
+        ])
 
     def __add_ui_bindings(self):
         self.ui.osr2ConnectButton.clicked.connect(self.__osr2_connect)
@@ -160,7 +167,11 @@ class OSR2PlayerWindow(object):
     def __start_stop_stroke_simulator(self):
         if self.ui.simulatorStartStopButton.text() == 'start':
             self.ui.simulatorStartStopButton.setText('stop')
-            self.simulator = StrokeSimulator(self.tcode_controler.set_position, self.ui.strokesSpinBox.value())
+            self.simulator = StrokeSimulator(
+                    self.tcode_controler.set_position,
+                    strokes_per_minute=self.ui.strokesSpinBox.value(),
+                    mode=self.ui.simulatorModeComboBox.currentText()
+                )
             self.simulator.start()
         else:
             self.ui.simulatorStartStopButton.setText('start')
