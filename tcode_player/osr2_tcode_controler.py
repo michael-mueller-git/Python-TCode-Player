@@ -29,6 +29,7 @@ class OSR2TCodeControler(QtCore.QThread):
         self.MAX_INTERVAL = 50
         self.calculate_player_speed = calculate_player_speed
         self.half_stroke_speed = half_stroke_speed
+        self.last_pos = 50
 
     def __del__(self):
         try:
@@ -42,6 +43,9 @@ class OSR2TCodeControler(QtCore.QThread):
 
     #: video player status changed signal with status string
     playerStatusChanged = QtCore.pyqtSignal(str)
+
+    def position(self):
+        return self.last_pos
 
     def set_serial_port(self, port):
         if port is None or port == '':
@@ -78,6 +82,7 @@ class OSR2TCodeControler(QtCore.QThread):
         if self.serial_device is not None and self.serial_device.isOpen():
             position = max((self.lower_limit, min((self.upper_limit, position)))) \
                     if respect_limits else max((0, min((99, position))))
+            self.last_pos = position
             self.serial_device.write(
                     bytes('L0' + str(position % 100).zfill(2) + '5I' + str(interval) + '\r\n', 'utf-8')
                     )
