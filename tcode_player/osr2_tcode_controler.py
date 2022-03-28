@@ -96,11 +96,8 @@ class OSR2TCodeControler(QtCore.QThread):
             position = max((self.lower_limit, min((self.upper_limit, position)))) \
                     if respect_limits else max((0, min((99, position))))
             speed = self.get_speed(position, interval)
-            opos = position
-            print('speed', speed)
             if speed > self.speed_limit:
                 position = self.limit_speed(position, interval)
-                print('limit', opos, position)
             self.last_pos = position
             position = round(position)
             self.serial_device.write(
