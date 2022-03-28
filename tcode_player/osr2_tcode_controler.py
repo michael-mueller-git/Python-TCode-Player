@@ -87,7 +87,6 @@ class OSR2TCodeControler(QtCore.QThread):
 
     def limit_speed(self, position, interval_in_ms):
         delta = self.speed_limit * interval_in_ms / 1000.0
-        print('delta', delta)
         return max((self.last_pos - delta, 0)) if position < self.last_pos else min((99, self.last_pos + delta))
 
     def set_position(self, position, interval=250, respect_limits=False):
