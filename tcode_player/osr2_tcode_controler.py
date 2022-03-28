@@ -9,10 +9,11 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 class OSR2TCodeControler(QtCore.QThread):
 
-    def __init__(self, lower_limit, upper_limit, calculate_player_speed=False, half_stroke_speed=False):
+    def __init__(self, lower_limit, upper_limit, speed_limit, calculate_player_speed=False, half_stroke_speed=False):
         super().__init__(parent=None)
         self.lower_limit = lower_limit
         self.upper_limit = upper_limit
+        self.speed_limit = speed_limit
         self.serial_device = None
         self.video_pause = True
         self.player_speed = 1.0
@@ -77,12 +78,31 @@ class OSR2TCodeControler(QtCore.QThread):
         value = max((0, value))
         if self.upper_limit > value: self.lower_limit = value
 
+    def set_speed_limit(self, value):
+        value = max((0, value))
+        self.speed_limit = value
+
+    def get_speed(self, position, interval_in_ms):
+        return 1000.0 * abs(position - self.last_pos) / interval_in_ms
+
+    def limit_speed(self, position, interval_in_ms):
+        delta = self.speed_limit * interval_in_ms / 1000.0
+        print('delta', delta)
+        return max((self.last_pos - delta, 0)) if position < self.last_pos else min((99, self.last_pos + delta))
+
     def set_position(self, position, interval=250, respect_limits=False):
         if interval < self.MAX_INTERVAL: return
         if self.serial_device is not None and self.serial_device.isOpen():
             position = max((self.lower_limit, min((self.upper_limit, position)))) \
                     if respect_limits else max((0, min((99, position))))
+            speed = self.get_speed(position, interval)
+            opos = position
+            print('speed', speed)
+            if speed > self.speed_limit:
+                position = self.limit_speed(position, interval)
+                print('limit', opos, position)
             self.last_pos = position
+            position = round(position)
             self.serial_device.write(
                     bytes('L0' + str(position % 100).zfill(2) + '5I' + str(interval) + '\r\n', 'utf-8')
                     )

@@ -86,6 +86,7 @@ class OSR2PlayerWindow(object):
         self.ui.simulatorStartStopButton.clicked.connect(self.__start_stop_stroke_simulator)
         self.ui.lowerLimitSpinBox.valueChanged.connect(lambda val: self.tcode_controler.set_lower_limit(val))
         self.ui.upperLimitSpinBox.valueChanged.connect(lambda val: self.tcode_controler.set_upper_limit(val))
+        self.ui.speedLimitSpinBox.valueChanged.connect(lambda val: self.tcode_controler.set_speed_limit(val))
         self.ui.position0Button.clicked.connect(lambda: self.tcode_controler.set_position(0))
         self.ui.position20Button.clicked.connect(lambda: self.tcode_controler.set_position(20))
         self.ui.position40Button.clicked.connect(lambda: self.tcode_controler.set_position(40))
@@ -109,6 +110,7 @@ class OSR2PlayerWindow(object):
         self.tcode_controler = OSR2TCodeControler(
                 self.ui.lowerLimitSpinBox.value(),
                 self.ui.upperLimitSpinBox.value(),
+                self.ui.speedLimitSpinBox.value(),
                 PLAYER == 'Whirligig',
                 self.ui.halfStrokeCheckBox.isChecked())
         if PLAYER == 'Whirligig':
