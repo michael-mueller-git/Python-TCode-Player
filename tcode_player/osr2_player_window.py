@@ -78,7 +78,8 @@ class OSR2PlayerWindow(object):
     def __setup_comboboxes(self):
         self.ui.simulatorModeComboBox.addItems([
             "linear",
-            "random"
+            "random",
+            "sequence"
         ])
 
     def __add_ui_bindings(self):

@@ -33,14 +33,44 @@ class StrokeSimulator(QtCore.QThread):
                     respect_limits=True)
             time.sleep(60/self.strokes_per_minute/2)
 
+
+    def play_sequence(self):
+        sequence = [(0, 100), (60, 100)]
+        while not self.stop_simulator:
+            self.cycle_counter += 1
+            for (seq_min, seq_max) in sequence:
+                seq_dif = max((abs(seq_max - seq_min), 20))
+
+                if self.stop_simulator:
+                    break
+
+                self.set_position_callback(
+                        position=seq_min,
+                        interval=round(seq_dif/100.0 * float(60)/self.strokes_per_minute*1000/2),
+                        respect_limits=True)
+
+                time.sleep(seq_dif/100.0 * (60/self.strokes_per_minute/2))
+
+                if self.stop_simulator:
+                    break
+
+                self.set_position_callback(
+                        position=seq_max,
+                        interval=round(seq_dif/100.0 * float(60)/self.strokes_per_minute*1000/2),
+                        respect_limits=True)
+
+                time.sleep(seq_dif/100.0 * (60/self.strokes_per_minute/2))
+
+
+
     def rand_speed_by_distance(self, distance, speed_delta):
         mul = 100.0/max((2, distance))
         return random.randint(int(max((speed_delta, self.strokes_per_minute*mul - speed_delta))), int(self.strokes_per_minute*mul + speed_delta))
 
 
     def play_random(self):
-        min_delta = 17
-        speed_delta = int(self.strokes_per_minute / 30) # +-30%
+        min_delta = 20
+        speed_delta = int(self.strokes_per_minute / 33) # +-33%
         current_pos = 50
         max_top_pos = 80
         while not self.stop_simulator:
@@ -67,6 +97,8 @@ class StrokeSimulator(QtCore.QThread):
         print('simulator mode', self.mode)
         if self.mode == 'random':
             self.play_random()
+        elif self.mode == 'sequence':
+            self.play_sequence()
         else:
             self.play_linear()
 
