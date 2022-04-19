@@ -34,8 +34,7 @@ class StrokeSimulator(QtCore.QThread):
             time.sleep(60/self.strokes_per_minute/2)
 
 
-    def play_sequence(self):
-        sequence = [(0, 100), (60, 100)]
+    def play_sequence(self, sequence):
         while not self.stop_simulator:
             self.cycle_counter += 1
             for (seq_min, seq_max) in sequence:
@@ -72,7 +71,7 @@ class StrokeSimulator(QtCore.QThread):
         min_delta = 20
         speed_delta = int(self.strokes_per_minute / 33) # +-33%
         current_pos = 50
-        max_top_pos = 80
+        max_top_pos = 99
         while not self.stop_simulator:
             self.cycle_counter += 1
             rand_top_pos = random.randint(min_delta, max_top_pos)
@@ -97,8 +96,10 @@ class StrokeSimulator(QtCore.QThread):
         print('simulator mode', self.mode)
         if self.mode == 'random':
             self.play_random()
-        elif self.mode == 'sequence':
-            self.play_sequence()
+        elif self.mode == 'sequence_001':
+            self.play_sequence([(0, 100), (58, 100)])
+        elif self.mode == 'sequence_002':
+            self.play_sequence([(0, 100), (58, 100), (58, 100)])
         else:
             self.play_linear()
 
