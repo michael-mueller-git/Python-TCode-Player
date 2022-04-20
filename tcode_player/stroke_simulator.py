@@ -97,9 +97,9 @@ class StrokeSimulator(QtCore.QThread):
         if self.mode == 'random':
             self.play_random()
         elif self.mode == 'sequence_001':
-            self.play_sequence([(0, 100), (58, 100)])
+            self.play_sequence([(0, 100), (50, 100)])
         elif self.mode == 'sequence_002':
-            self.play_sequence([(0, 100), (58, 100), (58, 100)])
+            self.play_sequence([(0, 100), (50, 100), (50, 100)])
         else:
             self.play_linear()
 
