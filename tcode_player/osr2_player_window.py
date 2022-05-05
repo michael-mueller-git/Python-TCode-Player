@@ -37,7 +37,7 @@ class OSR2PlayerWindow(object):
         self.__start_background_tasks()
         self.__add_ui_bindings()
         self.__refresh_serial_port_list()
-        self.ui.offsetSlider.setValue(-50)
+        self.ui.offsetSlider.setValue(0)
         self.keypress_queue = Queue(maxsize=32)
         self.listener = pynput.keyboard.Listener(
             on_press = self.on_key_press,
