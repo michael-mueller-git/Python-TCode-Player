@@ -137,13 +137,16 @@ class OSR2PlayerWindow(object):
 
     def __player_status_changed(self, status):
         if status == 'play':
-            if self.simulator is not None: self.simulator.stop()
-            self.ui.simulatorStartStopButton.setText('start')
-            self.ui.simulatorGroupBox.setEnabled(False)
-            self.ui.positionGroupBox.setEnabled(False)
+            # if self.simulator is not None:
+                # self.simulator.stop()
+            # self.ui.simulatorStartStopButton.setText('start')
+            # self.ui.simulatorGroupBox.setEnabled(False)
+            # self.ui.positionGroupBox.setEnabled(False)
+            pass
         elif status == 'pause':
-            self.ui.simulatorGroupBox.setEnabled(True)
-            self.ui.positionGroupBox.setEnabled(True)
+            # self.ui.simulatorGroupBox.setEnabled(True)
+            # self.ui.positionGroupBox.setEnabled(True)
+            pass
         else:
             print('ERROR: status not implemented')
 
@@ -167,6 +170,8 @@ class OSR2PlayerWindow(object):
             self.ui.positionGroupBox.setEnabled(False)
             self.ui.simulatorGroupBox.setEnabled(False)
             self.tcode_controler.set_serial_port(None)
+            if self.simulator is not None:
+                self.simulator.stop()
 
     def __start_stop_stroke_simulator(self):
         if self.ui.simulatorStartStopButton.text() == 'start':
