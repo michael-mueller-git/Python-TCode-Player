@@ -101,6 +101,11 @@ class OSR2TCodeControler(QtCore.QThread):
 
             position = round(position)
             self.last_pos = position
+            if position > 99:
+                position = 99
+            if position < 0:
+                position = 0
+            # print('set position', position)
             self.serial_device.write(
                     bytes('L0' + str(position % 100).zfill(2) + '5I' + str(interval) + '\r\n', 'utf-8')
                     )
