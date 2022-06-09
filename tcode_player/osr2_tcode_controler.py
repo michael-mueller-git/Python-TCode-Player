@@ -89,18 +89,16 @@ class OSR2TCodeControler(QtCore.QThread):
         delta = self.speed_limit * interval_in_ms / 1000.0
         return max((self.last_pos - delta, 0)) if position < self.last_pos else min((99, self.last_pos + delta))
 
-    def set_position(self, position, interval=250, respect_limits=False):
+    def set_position(self, position, interval=750, respect_limits=True):
         if interval < self.MAX_INTERVAL: return
         if self.serial_device is not None and self.serial_device.isOpen():
-            if False:
-                position = max((self.lower_limit, min((self.upper_limit, position)))) \
-                        if respect_limits else max((0, min((99, position))))
-            else:
+            if respect_limits:
                 position = self.lower_limit + abs(self.upper_limit - self.lower_limit)/100.0  * position
 
-            speed = self.get_speed(position, interval)
-            if speed > self.speed_limit and self.speed_limit > 0:
-                position = self.limit_speed(position, interval)
+                speed = self.get_speed(position, interval)
+                if speed > self.speed_limit and self.speed_limit > 0:
+                    position = self.limit_speed(position, interval)
+
             position = round(position)
             self.last_pos = position
             self.serial_device.write(
