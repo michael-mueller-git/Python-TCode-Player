@@ -3,6 +3,7 @@ import time
 import platform
 import serial.tools.list_ports
 import pynput.keyboard
+import json
 from queue import Queue
 
 from PyQt5 import QtWidgets, QtCore, QtGui
@@ -38,6 +39,7 @@ class OSR2PlayerWindow(object):
         self.__add_ui_bindings()
         self.__refresh_serial_port_list()
         self.ui.offsetSlider.setValue(0)
+        self.load_config()
         self.keypress_queue = Queue(maxsize=32)
         self.listener = pynput.keyboard.Listener(
             on_press = self.on_key_press,
@@ -47,6 +49,32 @@ class OSR2PlayerWindow(object):
 
     def __del__(self):
         self.listener.stop()
+
+
+    def load_config(self):
+        if not os.path.exists("./config.json"):
+            print("config not found")
+            return
+
+        print("load config")
+        with open("./config.json", "r") as f:
+            config = json.load(f)
+
+        if "lowerLimit" in config:
+            self.ui.lowerLimitSpinBox.setValue(config["lowerLimit"])
+
+        if "upperLimit" in config:
+            self.ui.upperLimitSpinBox.setValue(config["upperLimit"])
+
+        if "offset" in config:
+            self.ui.offsetSlider.setValue(config["offset"])
+
+        if "speedLimit" in config:
+            self.ui.speedLimitSpinBox.setValue(config["speedLimit"])
+
+        if "strokes" in config:
+            self.ui.strokesSpinBox.setValue(config["strokes"])
+
 
     def on_key_press(self, key: pynput.keyboard.Key) -> None:
         """ Our key press handle to register the key presses
