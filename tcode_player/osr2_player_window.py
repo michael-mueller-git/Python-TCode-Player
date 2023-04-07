@@ -5,6 +5,7 @@ import serial.tools.list_ports
 import pynput.keyboard
 import json
 from queue import Queue
+from threading import Thread
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
@@ -45,11 +46,50 @@ class OSR2PlayerWindow(object):
             on_press = self.on_key_press,
             on_release = None
         )
+        self.should_exit = False
         self.listener.start()
+        self.gamepad_thread = Thread(target=self.gamepad_event_loop)
+        self.gamepad_thread.start()
 
     def __del__(self):
+        self.should_exit = True
         self.listener.stop()
 
+
+    def gamepad_event_loop(self):
+        try:
+            from inputs import get_gamepad
+            while not self.should_exit:
+                events = get_gamepad()
+                for event in events:
+                    if self.should_exit:
+                        break
+                    if event.ev_type == "Sync":
+                        continue
+                    if True:
+                        if event.ev_type == "Absolute":
+                            if event.code == "ABS_Z":
+                                if event.state in [127, 128, 129]:
+                                    continue
+
+                    # print("[DEBUG]", event.ev_type, event.code, event.state)
+
+                    if str(event.code) == "BTN_BASE" and event.state == 1:
+                        self.ui.lowerLimitSpinBox.setValue(max((0, self.ui.lowerLimitSpinBox.value() - 5)))
+                    if str(event.code) == "BTN_BASE2" and event.state == 1:
+                        self.ui.upperLimitSpinBox.setValue(max((0, self.ui.upperLimitSpinBox.value() - 5, self.ui.lowerLimitSpinBox.value())))
+                    if str(event.code) == "BTN_TOP2" and event.state == 1:
+                        self.ui.lowerLimitSpinBox.setValue(min((99, self.ui.lowerLimitSpinBox.value() + 5, self.ui.upperLimitSpinBox.value())))
+                    if str(event.code) == "BTN_PINKIE" and event.state == 1:
+                        self.ui.upperLimitSpinBox.setValue(min((99, self.ui.upperLimitSpinBox.value() + 5)))
+                    if str(event.code) == "BTN_THUMB2" and event.state == 1:
+                        if self.ui.simulatorGroupBox.isEnabled():
+                            self.__start_stop_stroke_simulator()
+                        else:
+                            print("simulator not available")
+
+        except:
+            print("Gamepad not found")
 
     def load_config(self):
         if not os.path.exists("./config.json"):
@@ -203,6 +243,7 @@ class OSR2PlayerWindow(object):
 
     def __start_stop_stroke_simulator(self):
         if self.ui.simulatorStartStopButton.text() == 'start':
+            print("start simulator")
             self.ui.simulatorStartStopButton.setText('stop')
             self.simulator = StrokeSimulator(
                     self.tcode_controler.set_position,
@@ -211,5 +252,6 @@ class OSR2PlayerWindow(object):
                 )
             self.simulator.start()
         else:
+            print("stop simulator")
             self.ui.simulatorStartStopButton.setText('start')
             if self.simulator is not None: self.simulator.stop()

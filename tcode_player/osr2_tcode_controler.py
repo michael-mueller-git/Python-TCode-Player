@@ -4,6 +4,7 @@ import json
 import threading
 import statistics
 import serial  # pyserial
+from threading import Thread
 
 from PyQt5 import QtWidgets, QtCore, QtGui
 
@@ -31,6 +32,7 @@ class OSR2TCodeControler(QtCore.QThread):
         self.calculate_player_speed = calculate_player_speed
         self.half_stroke_speed = half_stroke_speed
         self.last_pos = 50
+
 
     def __del__(self):
         try:
