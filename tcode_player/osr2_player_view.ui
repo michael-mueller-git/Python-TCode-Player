@@ -390,7 +390,7 @@
                                     <number>200</number>
                                 </property>
                                 <property name="singleStep">
-                                    <number>5</number>
+                                    <number>2</number>
                                 </property>
                                 <property name="value">
                                     <number>40</number>
