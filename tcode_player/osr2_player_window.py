@@ -41,6 +41,7 @@ class OSR2PlayerWindow(object):
         self.__refresh_serial_port_list()
         self.ui.offsetSlider.setValue(0)
         self.load_config()
+        self.use_keyboard_shortcuts = False
         self.keypress_queue = Queue(maxsize=32)
         self.listener = pynput.keyboard.Listener(
             on_press = self.on_key_press,
@@ -126,15 +127,17 @@ class OSR2PlayerWindow(object):
         def was_key(k):
             return key_str == "'"+k[0]+"'"
 
-        if was_key('q'):
-            self.ui.lowerLimitSpinBox.setValue(min((99, self.ui.lowerLimitSpinBox.value() + 5, self.ui.upperLimitSpinBox.value())))
-        elif was_key('a'):
-            self.ui.lowerLimitSpinBox.setValue(max((0, self.ui.lowerLimitSpinBox.value() - 5)))
-        elif was_key('w'):
-            self.ui.upperLimitSpinBox.setValue(min((99, self.ui.upperLimitSpinBox.value() + 5)))
-        elif was_key('s'):
-            self.ui.upperLimitSpinBox.setValue(max((0, self.ui.upperLimitSpinBox.value() - 5, self.ui.lowerLimitSpinBox.value())))
-        elif not self.keypress_queue.full():
+        if self.use_keyboard_shortcuts:
+            if was_key('q'):
+                self.ui.lowerLimitSpinBox.setValue(min((99, self.ui.lowerLimitSpinBox.value() + 5, self.ui.upperLimitSpinBox.value())))
+            elif was_key('a'):
+                self.ui.lowerLimitSpinBox.setValue(max((0, self.ui.lowerLimitSpinBox.value() - 5)))
+            elif was_key('w'):
+                self.ui.upperLimitSpinBox.setValue(min((99, self.ui.upperLimitSpinBox.value() + 5)))
+            elif was_key('s'):
+                self.ui.upperLimitSpinBox.setValue(max((0, self.ui.upperLimitSpinBox.value() - 5, self.ui.lowerLimitSpinBox.value())))
+
+        if not self.keypress_queue.full():
             self.keypress_queue.put(key)
 
     def show(self):
