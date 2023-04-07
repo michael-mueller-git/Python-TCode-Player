@@ -83,6 +83,10 @@ class OSR2PlayerWindow(object):
                         self.ui.lowerLimitSpinBox.setValue(min((99, self.ui.lowerLimitSpinBox.value() + 5, self.ui.upperLimitSpinBox.value())))
                     if str(event.code) == "BTN_PINKIE" and event.state == 1:
                         self.ui.upperLimitSpinBox.setValue(min((99, self.ui.upperLimitSpinBox.value() + 5)))
+                    if str(event.code) == "ABS_Y" and event.state == 0:
+                        self.tcode_controler.set_position(self.tcode_controler.position() + 20, respect_limits=False)
+                    if str(event.code) == "ABS_Y" and event.state == 255:
+                        self.tcode_controler.set_position(self.tcode_controler.position() - 20, respect_limits=False)
                     if str(event.code) == "BTN_THUMB2" and event.state == 1:
                         if self.ui.simulatorGroupBox.isEnabled():
                             self.__start_stop_stroke_simulator()
