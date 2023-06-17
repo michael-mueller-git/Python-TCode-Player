@@ -37,7 +37,7 @@ class StrokeSimulator(QtCore.QThread):
     def play_sequence(self, sequence):
         while not self.stop_simulator:
             self.cycle_counter += 1
-            for (seq_min, seq_max) in sequence:
+            for (seq_min, seq_max, t1, t2) in sequence:
                 seq_dif = max((abs(seq_max - seq_min), 20))
 
                 if self.stop_simulator:
@@ -45,20 +45,20 @@ class StrokeSimulator(QtCore.QThread):
 
                 self.set_position_callback(
                         position=seq_min,
-                        interval=round(seq_dif/100.0 * float(60)/self.strokes_per_minute*1000/2),
+                        interval=round(seq_dif/100.0 * t1 * float(60)/self.strokes_per_minute*1000/2),
                         respect_limits=True)
 
-                time.sleep(seq_dif/100.0 * (60/self.strokes_per_minute/2))
+                time.sleep(seq_dif/100.0 * t1 * (60/self.strokes_per_minute/2))
 
                 if self.stop_simulator:
                     break
 
                 self.set_position_callback(
                         position=seq_max,
-                        interval=round(seq_dif/100.0 * float(60)/self.strokes_per_minute*1000/2),
+                        interval=round(seq_dif/100.0 * t2 * float(60)/self.strokes_per_minute*1000/2),
                         respect_limits=True)
 
-                time.sleep(seq_dif/100.0 * (60/self.strokes_per_minute/2))
+                time.sleep(seq_dif/100.0 * t2 * (60/self.strokes_per_minute/2))
 
 
 
@@ -96,10 +96,14 @@ class StrokeSimulator(QtCore.QThread):
         print('simulator mode', self.mode)
         if self.mode == 'random':
             self.play_random()
+        elif self.mode == '2xDown':
+            self.play_sequence([(0, 100, 1, 2)])
+        elif self.mode == '2xUp':
+            self.play_sequence([(0, 100, 2, 1)])
         elif self.mode == 'sequence_001':
-            self.play_sequence([(0, 100), (50, 100)])
+            self.play_sequence([(0, 100, 1, 1), (50, 100, 1, 1)])
         elif self.mode == 'sequence_002':
-            self.play_sequence([(0, 100), (50, 100), (50, 100)])
+            self.play_sequence([(0, 100, 1, 1), (50, 100, 1, 1), (50, 100, 1, 1)])
         else:
             self.play_linear()
 

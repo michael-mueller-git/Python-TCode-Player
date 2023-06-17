@@ -91,13 +91,23 @@ class OSR2PlayerWindow(object):
                         self.ui.strokesSpinBox.setValue(self.ui.strokesSpinBox.value()+2)
                     if str(event.code) == "ABS_X" and event.state == 0:
                         self.ui.strokesSpinBox.setValue(self.ui.strokesSpinBox.value()-2)
+                    if str(event.code) == "BTN_TRIGGER" and event.state == 1:
+                        if self.ui.simulatorStartStopButton.text() != 'start':
+                            if self.ui.simulatorGroupBox.isEnabled():
+                                self.__start_stop_stroke_simulator()
+                        selected = self.ui.simulatorModeComboBox.currentText()
+                        items = [self.ui.simulatorModeComboBox.itemText(i) for i in range(self.ui.simulatorModeComboBox.count())]
+                        new_idx = (items.index(selected) + 1) % self.ui.simulatorModeComboBox.count()
+                        self.ui.simulatorModeComboBox.setCurrentIndex(new_idx)
+                        print(selected, new_idx)
                     if str(event.code) == "BTN_THUMB2" and event.state == 1:
                         if self.ui.simulatorGroupBox.isEnabled():
                             self.__start_stop_stroke_simulator()
                         else:
                             print("simulator not available")
 
-        except:
+        except Exception as ex:
+            print(ex)
             print("Gamepad not found")
 
     def load_config(self):
@@ -158,6 +168,8 @@ class OSR2PlayerWindow(object):
         self.ui.simulatorModeComboBox.addItems([
             "linear",
             "random",
+            "2xDown",
+            "2xUp",
             "sequence_001",
             "sequence_002"
         ])
