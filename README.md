@@ -2,6 +2,8 @@
 
 App to play funscripts on your tcode serial devices. Supported video players are [MPV](https://mpv.io/) and [Whirligig](http://www.whirligig.xyz/).
 
+This Project only implements the most basic features for testing purpose and is not indented for productive use. For Windows user i recommend to check out [MultiFunPlayer](https://github.com/Yoooi0/MultiFunPlayer).
+
 ## Build Application from Source
 
 ### Windows 10
