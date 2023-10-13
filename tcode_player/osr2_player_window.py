@@ -59,7 +59,7 @@ class OSR2PlayerWindow(object):
 
     def gamepad_event_loop(self):
         try:
-            from inputs import get_gamepad
+            from tcode_player.inputs import get_gamepad
             while not self.should_exit:
                 events = get_gamepad()
                 for event in events:
