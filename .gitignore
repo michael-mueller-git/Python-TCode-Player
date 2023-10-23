@@ -3,3 +3,4 @@ build
 *.spec
 config.json
 __pycache__
+.direnv/
