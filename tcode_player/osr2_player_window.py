@@ -40,6 +40,7 @@ class OSR2PlayerWindow(object):
         self.__add_ui_bindings()
         self.__refresh_serial_port_list()
         self.ui.offsetSlider.setValue(0)
+        self.auto_connect = ""
         self.load_config()
         self.use_keyboard_shortcuts = False
         self.keypress_queue = Queue(maxsize=32)
@@ -51,6 +52,14 @@ class OSR2PlayerWindow(object):
         self.listener.start()
         self.gamepad_thread = Thread(target=self.gamepad_event_loop)
         self.gamepad_thread.start()
+        if self.ui.portsComboBox.count() > 0:
+            for i in range(self.ui.portsComboBox.count()):
+                dev = self.ui.portsComboBox.itemText(i)
+                if dev != "" and dev == self.auto_connect:
+                    print("auto-connect", dev)
+                    self.ui.portsComboBox.setCurrentIndex(i)
+                    self.__osr2_connect()
+                    break
 
     def __del__(self):
         self.should_exit = True
@@ -133,6 +142,9 @@ class OSR2PlayerWindow(object):
 
         if "strokes" in config:
             self.ui.strokesSpinBox.setValue(config["strokes"])
+
+        if "connect" in config:
+            self.auto_connect = config["connect"]
 
 
     def on_key_press(self, key: pynput.keyboard.Key) -> None:
