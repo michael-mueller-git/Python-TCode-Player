@@ -113,6 +113,18 @@ class OSR2TCodeControler(QtCore.QThread):
                     bytes('L0' + str(position % 100).zfill(2) + '5I' + str(interval) + '\r\n', 'utf-8')
                     )
 
+    def receive(self):
+        if self.serial_device is None:
+            return
+        data = b''
+        while self.serial_device.inWaiting():
+            data += self.serial_device.read(1)
+        if data != b'':
+            for line in data.decode("utf-8").split('\n'):
+                if line.strip() != "":
+                    print('receive', line.strip())
+            print("--")
+
     def set_offset(self, milliseconds):
         self.offset = milliseconds
 
@@ -220,6 +232,7 @@ class OSR2TCodeControler(QtCore.QThread):
 
     def run(self):
         while True:
+            self.receive()
             if self.video_pause or self.funsctipt_file == '' or self.timecode < 0:
                 time.sleep(0.1)
                 self.last_exec_time = self.__millis()
