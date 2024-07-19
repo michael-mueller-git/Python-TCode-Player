@@ -19,13 +19,16 @@ if platform.system() == 'Windows':
     print('windows environment')
     PLAYER = 'Whirligig'
 else:
-    print('develop environment')
-    PLAYER = 'MPV'
+    print('linux environment')
+    PLAYER = 'HereSphere'
 
 if PLAYER == 'Whirligig':
     from tcode_player.whirligig_timecode_client import WhirligigTimecodeClient
 elif PLAYER == 'MPV':
     from tcode_player.mpv_timecode_client import MPVTimecodeClient
+elif PLAYER == 'HereSphere':
+    from tcode_player.heresphere_timecode_client import HereSphereTimecodeClient
+
 
 class OSR2PlayerWindow(object):
 
@@ -216,7 +219,7 @@ class OSR2PlayerWindow(object):
                 self.ui.lowerLimitSpinBox.value(),
                 self.ui.upperLimitSpinBox.value(),
                 self.ui.speedLimitSpinBox.value(),
-                PLAYER == 'Whirligig',
+                PLAYER == 'Whirligig' or PLAYER == 'HereSphere',
                 self.ui.halfStrokeCheckBox.isChecked())
         if PLAYER == 'Whirligig':
             self.timecode_client = WhirligigTimecodeClient(
@@ -229,6 +232,11 @@ class OSR2PlayerWindow(object):
                     pause_callback=self.tcode_controler.pause_handler,
                     video_callback=self.tcode_controler.video_handler,
                     speed_callback=self.tcode_controler.speed_handler)
+        elif PLAYER == 'HereSphere':
+            self.timecode_client = HereSphereTimecodeClient(
+                    timecode_callback=self.tcode_controler.timecode_handler,
+                    pause_callback=self.tcode_controler.pause_handler,
+                    video_callback=self.tcode_controler.video_handler)
         else:
             print('ERROR: Player', PLAYER, 'not implemented')
             exit()

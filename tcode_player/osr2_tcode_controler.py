@@ -27,6 +27,7 @@ class OSR2TCodeControler(QtCore.QThread):
         self.update_time = self.__millis()
         self.last_exec_time = self.__millis()
         self.funsctipt_file = ''
+        self.prev_load_fs = ""
         self.funscript_data = {'actions':[]}
         self.MAX_INTERVAL = 50
         self.calculate_player_speed = calculate_player_speed
@@ -149,6 +150,7 @@ class OSR2TCodeControler(QtCore.QThread):
 
     def timecode_handler(self, timecode):
         if timecode is None:
+            print("tc is none")
             self.timecode = -1
             self.timecode_diffs = []
             return
@@ -172,6 +174,11 @@ class OSR2TCodeControler(QtCore.QThread):
         self.player_speed = 1.0 if player_speed is None else player_speed
 
     def __load_funscript(self):
+        if self.prev_load_fs == self.funsctipt_file:
+            return
+
+        self.prev_load_fs = self.funsctipt_file
+        print("load fs")
         self.mutex.acquire()
         self.timecode = -1
         self.timecode_diffs = []
