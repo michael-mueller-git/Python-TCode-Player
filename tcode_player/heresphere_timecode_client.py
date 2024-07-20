@@ -9,10 +9,14 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 class HereSphereTimecodeClient(QtCore.QThread):
 
     def __init__(self,
+            ipTextEdit,
+            portSpinBox,
             timecode_callback=None,
             pause_callback=None,
             video_callback=None):
         super().__init__(parent=None)
+        self.ipTextEdit = ipTextEdit
+        self.portSpinBox = portSpinBox
         self.timecode_callback = timecode_callback
         self.pause_callback = pause_callback
         self.video_callback = video_callback
@@ -21,26 +25,26 @@ class HereSphereTimecodeClient(QtCore.QThread):
     connectionChanged = QtCore.pyqtSignal(str)
 
     def run(self):
-        while True:
+        print("Run HereSphere Receiver")
+        while True:                
+            ip = self.ipTextEdit.text().strip()
+            port = self.portSpinBox.value() 
+            print("try connect", ip, port)
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    s.connect(('10.0.6.100', 23554))
+                    s.settimeout(3.0) 
+                    s.connect((ip, port))
                     self.connectionChanged.emit('connected')
-                    update_time = round(time.time() * 1000)
                     while True:
                         data = s.recv(1024)
                         if not data:
                             print("no data")
                             break
-                            if round(time.time() * 1000) > update_time + 4000: break
-                            continue
-
 
                         expected_len = data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24)
                         print(expected_len)
                         
                         data = data[4:]
-                        update_time = round(time.time() * 1000)
                         data = data.decode('utf-8')
                         content = json.loads(data)
                         if "currentTime" in content:

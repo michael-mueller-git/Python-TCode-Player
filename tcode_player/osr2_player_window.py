@@ -149,6 +149,12 @@ class OSR2PlayerWindow(object):
         if "connect" in config:
             self.auto_connect = config["connect"]
 
+        if "ip" in config:
+            self.ui.lineEdit.setText(config["ip"])
+
+        if "port" in config:
+            self.ui.spinBox.setValue(config["port"])
+
 
     def on_key_press(self, key: pynput.keyboard.Key) -> None:
         """ Our key press handle to register the key presses
@@ -234,9 +240,12 @@ class OSR2PlayerWindow(object):
                     speed_callback=self.tcode_controler.speed_handler)
         elif PLAYER == 'HereSphere':
             self.timecode_client = HereSphereTimecodeClient(
+                    ipTextEdit=self.ui.lineEdit,
+                    portSpinBox=self.ui.spinBox,
                     timecode_callback=self.tcode_controler.timecode_handler,
                     pause_callback=self.tcode_controler.pause_handler,
                     video_callback=self.tcode_controler.video_handler)
+            print("Init HereSpere")
         else:
             print('ERROR: Player', PLAYER, 'not implemented')
             exit()
