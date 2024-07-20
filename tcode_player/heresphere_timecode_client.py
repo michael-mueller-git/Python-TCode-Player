@@ -19,7 +19,7 @@ class HereSphereTimecodeClient(QtCore.QThread):
         super().__init__(parent=None)
         self.ipTextEdit = ipTextEdit
         self.portSpinBox = portSpinBox
-        self.pathPrefixEdit = pathPrefixEdit,
+        self.pathPrefixEdit = pathPrefixEdit
         self.timecode_callback = timecode_callback
         self.pause_callback = pause_callback
         self.video_callback = video_callback
@@ -45,11 +45,12 @@ class HereSphereTimecodeClient(QtCore.QThread):
                             break
 
                         expected_len = data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24)
-                        print(expected_len)
+                        # print(expected_len)
                         
                         data = data[4:]
                         data = data.decode('utf-8')
                         content = json.loads(data)
+                        # print(content)
                         if "currentTime" in content:
                             if self.timecode_callback is not None: self.timecode_callback(content["currentTime"])
                         if "playerState" in content:
@@ -57,8 +58,10 @@ class HereSphereTimecodeClient(QtCore.QThread):
                         if "resource" in content:
                             resource = unquote(content["resource"])
                             path = resource.split("/", 3)[-1]
-                            if self.video_callback is not None: self.video_callback(os.path.join(self.pathPrefixEdit.text().strip(), path))
-            except:
+                            full_path = os.path.join(self.pathPrefixEdit.text().strip(), path)
+                            if self.video_callback is not None: self.video_callback(full_path)
+            except Exception as ex:
+                print(ex)
                 self.connectionChanged.emit('disconnected')
                 if self.pause_callback is not None: self.pause_callback(True)
                 time.sleep(1)
