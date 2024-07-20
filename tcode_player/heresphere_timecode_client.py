@@ -1,5 +1,6 @@
 import socket
 import time
+import os
 import json
 
 from urllib.parse import unquote
@@ -11,12 +12,14 @@ class HereSphereTimecodeClient(QtCore.QThread):
     def __init__(self,
             ipTextEdit,
             portSpinBox,
+            pathPrefixEdit,
             timecode_callback=None,
             pause_callback=None,
             video_callback=None):
         super().__init__(parent=None)
         self.ipTextEdit = ipTextEdit
         self.portSpinBox = portSpinBox
+        self.pathPrefixEdit = pathPrefixEdit,
         self.timecode_callback = timecode_callback
         self.pause_callback = pause_callback
         self.video_callback = video_callback
@@ -54,7 +57,7 @@ class HereSphereTimecodeClient(QtCore.QThread):
                         if "resource" in content:
                             resource = unquote(content["resource"])
                             path = resource.split("/", 3)[-1]
-                            if self.video_callback is not None: self.video_callback("/mnt/" + path)
+                            if self.video_callback is not None: self.video_callback(os.path.join(self.pathPrefixEdit.text().strip(), path))
             except:
                 self.connectionChanged.emit('disconnected')
                 if self.pause_callback is not None: self.pause_callback(True)

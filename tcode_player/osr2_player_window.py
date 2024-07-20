@@ -155,6 +155,9 @@ class OSR2PlayerWindow(object):
         if "port" in config:
             self.ui.spinBox.setValue(config["port"])
 
+        if "prefix" in config:
+            self.ui.lineEdit_2.setText(config["prefix"])
+
 
     def on_key_press(self, key: pynput.keyboard.Key) -> None:
         """ Our key press handle to register the key presses
@@ -242,6 +245,7 @@ class OSR2PlayerWindow(object):
             self.timecode_client = HereSphereTimecodeClient(
                     ipTextEdit=self.ui.lineEdit,
                     portSpinBox=self.ui.spinBox,
+                    pathPrefixEdit=self.ui.lineEdit_2,
                     timecode_callback=self.tcode_controler.timecode_handler,
                     pause_callback=self.tcode_controler.pause_handler,
                     video_callback=self.tcode_controler.video_handler)
