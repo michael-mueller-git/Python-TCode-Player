@@ -30,7 +30,7 @@ class HereSphereTimecodeClient(QtCore.QThread):
     connectionChanged = QtCore.pyqtSignal(str)
 
     def get_samba_ips(self):
-        output = subprocess.check_output("sudo -A smbstatus", shell=True).decode('utf-8')
+        output = subprocess.check_output("sudo -A smbstatus", shell=True, stderr=subprocess.DEVNULL).decode('utf-8')
         # print(output)
         ips = []
         ip_pattern = r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'
