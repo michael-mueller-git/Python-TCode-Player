@@ -213,6 +213,7 @@ class OSR2PlayerWindow(object):
         self.ui.refreshPortsButton.clicked.connect(lambda: self.__refresh_serial_port_list())
         self.ui.offsetSlider.valueChanged.connect(self.__on_offset_change)
         self.ui.halfStrokeCheckBox.stateChanged.connect(lambda x: self.tcode_controler.half_stroke_speed_handler(x))
+        self.ui.rotationStrokeCheckBox.stateChanged.connect(lambda x: self.tcode_controler.rotation_stroke_handler(x))
         self.ui.strokesSpinBox.valueChanged.connect(lambda val: self.simulator.set_strokes(val) if self.simulator is not None else None)
 
     def __refresh_serial_port_list(self):
@@ -229,7 +230,8 @@ class OSR2PlayerWindow(object):
                 self.ui.upperLimitSpinBox.value(),
                 self.ui.speedLimitSpinBox.value(),
                 PLAYER == 'Whirligig' or PLAYER == 'HereSphere',
-                self.ui.halfStrokeCheckBox.isChecked())
+                self.ui.halfStrokeCheckBox.isChecked(),
+                self.ui.rotationStrokeCheckBox.isChecked())
         if PLAYER == 'Whirligig':
             self.timecode_client = WhirligigTimecodeClient(
                     timecode_callback=self.tcode_controler.timecode_handler,

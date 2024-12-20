@@ -10,7 +10,7 @@ from PyQt5 import QtWidgets, QtCore, QtGui
 
 class OSR2TCodeControler(QtCore.QThread):
 
-    def __init__(self, lower_limit, upper_limit, speed_limit, calculate_player_speed=False, half_stroke_speed=False):
+    def __init__(self, lower_limit, upper_limit, speed_limit, calculate_player_speed=False, half_stroke_speed=False, rotation_stroke=False):
         super().__init__(parent=None)
         self.lower_limit = lower_limit
         self.upper_limit = upper_limit
@@ -18,6 +18,7 @@ class OSR2TCodeControler(QtCore.QThread):
         self.serial_device = None
         self.video_pause = True
         self.player_speed = 1.0
+        self.rotation_stroke = rotation_stroke
         self.offset = 0
         self.mutex = threading.Lock()
         self.timecode = -1
@@ -68,9 +69,15 @@ class OSR2TCodeControler(QtCore.QThread):
     def __millis(self):
         return round(time.time() * 1000)
 
-    def half_stroke_speed_handler(self, half_stroke_speed):
+    def half_stroke_speed_handler(self, half_stroke_speed: bool):
         print(str('enable' if half_stroke_speed else 'disable') + ' half stroke speed')
         self.half_stroke_speed = half_stroke_speed
+        self.__load_funscript()
+
+
+    def rotation_stroke_handler(self, rotation_stroke: bool):
+        print(str('enable' if rotation_stroke else 'disable') + ' rotation stroke')
+        self.rotation_speed = rotation_stroke
         self.__load_funscript()
 
     def set_upper_limit(self, value):
@@ -121,9 +128,12 @@ class OSR2TCodeControler(QtCore.QThread):
         while self.serial_device.inWaiting():
             data += self.serial_device.read(1)
         if data != b'':
-            for line in data.decode("utf-8").split('\n'):
-                if line.strip() != "":
-                    print('receive', line.strip())
+            try:
+                for line in data.decode("utf-8").split('\n'):
+                    if line.strip() != "":
+                        print('receive', line.strip())
+            except: 
+                print(data)
             print("--")
 
     def set_offset(self, milliseconds):
