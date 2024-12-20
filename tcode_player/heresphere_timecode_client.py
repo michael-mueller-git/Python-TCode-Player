@@ -58,7 +58,7 @@ class HereSphereTimecodeClient(QtCore.QThread):
             if len(ips) == 0:
                 time.sleep(1)
             for ip in ips:
-                print("try connect", ip, port)
+                # print("try connect", ip, port)
                 try:
                     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         s.settimeout(3.0) 
@@ -87,7 +87,7 @@ class HereSphereTimecodeClient(QtCore.QThread):
                                 full_path = os.path.join(self.pathPrefixEdit.text().strip(), path)
                                 if self.video_callback is not None: self.video_callback(full_path)
                 except Exception as ex:
-                    print(ex)
+                    # print(ex)
                     self.connectionChanged.emit('disconnected')
                     if self.pause_callback is not None: self.pause_callback(True)
                     time.sleep(1)

@@ -15,6 +15,7 @@ class OSR2TCodeControler(QtCore.QThread):
         self.lower_limit = lower_limit
         self.upper_limit = upper_limit
         self.speed_limit = speed_limit
+        self.print_receive = False
         self.serial_device = None
         self.video_pause = True
         self.player_speed = 1.0
@@ -72,12 +73,14 @@ class OSR2TCodeControler(QtCore.QThread):
     def half_stroke_speed_handler(self, half_stroke_speed: bool):
         print(str('enable' if half_stroke_speed else 'disable') + ' half stroke speed')
         self.half_stroke_speed = half_stroke_speed
+        self.prev_load_fs = None
         self.__load_funscript()
 
 
     def rotation_stroke_handler(self, rotation_stroke: bool):
         print(str('enable' if rotation_stroke else 'disable') + ' rotation stroke')
-        self.rotation_speed = rotation_stroke
+        self.rotation_stroke = rotation_stroke
+        self.prev_load_fs = None
         self.__load_funscript()
 
     def set_upper_limit(self, value):
@@ -130,11 +133,12 @@ class OSR2TCodeControler(QtCore.QThread):
         if data != b'':
             try:
                 for line in data.decode("utf-8").split('\n'):
-                    if line.strip() != "":
+                    if line.strip() != "" and self.print_receive:
                         print('receive', line.strip())
             except: 
                 print(data)
-            print("--")
+            if self.print_receive:
+                print("--")
 
     def set_offset(self, milliseconds):
         self.offset = milliseconds
@@ -188,7 +192,7 @@ class OSR2TCodeControler(QtCore.QThread):
             return
 
         self.prev_load_fs = self.funsctipt_file
-        print("load fs")
+        print("load fs", self.funsctipt_file)
         self.mutex.acquire()
         self.timecode = -1
         self.timecode_diffs = []
@@ -236,11 +240,12 @@ class OSR2TCodeControler(QtCore.QThread):
             self.funscript_data = {'actions':[]}
 
         if self.rotation_stroke:
+            print("apply rotation stroke to script")
             del_idx = []
             for i in range(1, len(self.funscript_data['actions']) - 1):
-                x1 = self.funscript_data['actions'][i-1]
-                x2 = self.funscript_data['actions'][i]
-                x3 = self.funscript_data['actions'][i+1]
+                x1 = self.funscript_data['actions'][i-1]["pos"]
+                x2 = self.funscript_data['actions'][i]["pos"]
+                x3 = self.funscript_data['actions'][i+1]["pos"]
 
                 if x1 < x2 and x2 > x3:
                     self.funscript_data['actions'][i]['pos'] = 100
@@ -250,11 +255,14 @@ class OSR2TCodeControler(QtCore.QThread):
                     del_idx.append(i)
 
             for idx in reversed(del_idx):
+                print("remove point", idx)
                 del self.funscript_data['actions'][idx]
 
             if len(self.funscript_data['actions']) > 2:
-                self.funscript_data['actions'][0] = 0 if self.funscript_data['actions'][1] > 50 else 100
-                self.funscript_data['actions'][-1] = 0 if self.funscript_data['actions'][-2] > 50 else 100
+                self.funscript_data['actions'][0]["pos"] = 0 if self.funscript_data['actions'][1]["pos"] > 50 else 100
+                self.funscript_data['actions'][-1]["pos"] = 0 if self.funscript_data['actions'][-2]["pos"] > 50 else 100
+
+            print("action count", len(self.funscript_data['actions']))
 
         self.mutex.release()
 
