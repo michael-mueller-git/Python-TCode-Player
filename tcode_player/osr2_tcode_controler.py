@@ -234,6 +234,28 @@ class OSR2TCodeControler(QtCore.QThread):
                     })
         else:
             self.funscript_data = {'actions':[]}
+
+        if self.rotation_stroke:
+            del_idx = []
+            for i in range(1, len(self.funscript_data['actions']) - 1):
+                x1 = self.funscript_data['actions'][i-1]
+                x2 = self.funscript_data['actions'][i]
+                x3 = self.funscript_data['actions'][i+1]
+
+                if x1 < x2 and x2 > x3:
+                    self.funscript_data['actions'][i]['pos'] = 100
+                elif x1 > x2 and x2 < x3:
+                    self.funscript_data['actions'][i]['pos'] = 0
+                else:
+                    del_idx.append(i)
+
+            for idx in reversed(del_idx):
+                del self.funscript_data['actions'][idx]
+
+            if len(self.funscript_data['actions']) > 2:
+                self.funscript_data['actions'][0] = 0 if self.funscript_data['actions'][1] > 50 else 100
+                self.funscript_data['actions'][-1] = 0 if self.funscript_data['actions'][-2] > 50 else 100
+
         self.mutex.release()
 
     def video_handler(self, video_file):
