@@ -77,6 +77,7 @@ class OSR2PlayerWindow(object):
                 for event in events:
                     if self.should_exit:
                         break
+                    # print(event.code, event.ev_type, event.state)
                     if event.ev_type == "Sync":
                         continue
                     if True:
@@ -95,15 +96,35 @@ class OSR2PlayerWindow(object):
                         self.ui.lowerLimitSpinBox.setValue(min((99, self.ui.lowerLimitSpinBox.value() + 5, self.ui.upperLimitSpinBox.value())))
                     if str(event.code) == "BTN_PINKIE" and event.state == 1:
                         self.ui.upperLimitSpinBox.setValue(min((99, self.ui.upperLimitSpinBox.value() + 5)))
+
+                    if str(event.code) == "BTN_TR" and event.state == 1:
+                        self.ui.lowerLimitSpinBox.setValue(max((0, self.ui.lowerLimitSpinBox.value() - 5)))
+                    if str(event.code) == "BTN_TL" and event.state == 1:
+                        self.ui.upperLimitSpinBox.setValue(max((0, self.ui.upperLimitSpinBox.value() - 5, self.ui.lowerLimitSpinBox.value())))
+                    if str(event.code) == "BTN_WEST" and event.state == 1:
+                        self.ui.lowerLimitSpinBox.setValue(min((99, self.ui.lowerLimitSpinBox.value() + 5, self.ui.upperLimitSpinBox.value())))
+                    if str(event.code) == "BTN_Z" and event.state == 1:
+                        self.ui.upperLimitSpinBox.setValue(min((99, self.ui.upperLimitSpinBox.value() + 5)))
+                    
                     if str(event.code) == "ABS_Y" and event.state == 0:
                         self.tcode_controler.set_position(self.tcode_controler.position() + 20, respect_limits=False)
                     if str(event.code) == "ABS_Y" and event.state == 255:
                         self.tcode_controler.set_position(self.tcode_controler.position() - 20, respect_limits=False)
+                    if str(event.code) == "ABS_HAT0Y" and event.state == -1:
+                        self.tcode_controler.set_position(self.tcode_controler.position() + 20, respect_limits=False)
+                    if str(event.code) == "ABS_HAT0Y" and event.state == 1:
+                        self.tcode_controler.set_position(self.tcode_controler.position() - 20, respect_limits=False)
+                    
                     if str(event.code) == "ABS_X" and event.state == 255:
                         self.ui.strokesSpinBox.setValue(self.ui.strokesSpinBox.value()+2)
                     if str(event.code) == "ABS_X" and event.state == 0:
                         self.ui.strokesSpinBox.setValue(self.ui.strokesSpinBox.value()-2)
-                    if str(event.code) == "BTN_TRIGGER" and event.state == 1:
+                    if str(event.code) == "ABS_HAT0X" and event.state == 1:
+                        self.ui.strokesSpinBox.setValue(self.ui.strokesSpinBox.value()+2)
+                    if str(event.code) == "ABS_HAT0X" and event.state == -1:
+                        self.ui.strokesSpinBox.setValue(self.ui.strokesSpinBox.value()-2)
+
+                    if (str(event.code) == "BTN_TRIGGER" and event.state == 1) or (str(event.code) == "BTN_NORTH" and event.state == 1):
                         if self.ui.simulatorStartStopButton.text() != 'start':
                             if self.ui.simulatorGroupBox.isEnabled():
                                 self.__start_stop_stroke_simulator()
@@ -112,7 +133,8 @@ class OSR2PlayerWindow(object):
                         new_idx = (items.index(selected) + 1) % self.ui.simulatorModeComboBox.count()
                         self.ui.simulatorModeComboBox.setCurrentIndex(new_idx)
                         print(selected, new_idx)
-                    if str(event.code) == "BTN_THUMB2" and event.state == 1:
+
+                    if (str(event.code) == "BTN_THUMB2" and event.state == 1) or (str(event.code) == "BTN_EAST" and event.state == 1):
                         if self.ui.simulatorGroupBox.isEnabled():
                             self.__start_stop_stroke_simulator()
                         else:
